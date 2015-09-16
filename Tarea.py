@@ -115,3 +115,11 @@ error_3=np.fabs(integral_planck-planck_numerico)
 print('integral funcion de planck(scipy)= '+str(integral_planck))
 print('error= '+str(error_3))
 #-----------------------------------------------------------------------
+##tiempo de integracion con libreria python:
+###L_solar=10000 loops, best of 3: 47.4 microseg por loop
+###Planck=100 loops, 2.03 ms por loop
+
+##tiempo de integracion numerica:
+###L_solar=
+###Planck=1000, 357 microseg
+#------------------------
