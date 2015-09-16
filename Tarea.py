@@ -85,8 +85,12 @@ planck_sinctes=lambda x:tan(x)**3/(cos(x)**2*(exp(tan(x))-1))
 constantes=(2*pi*const.h.cgs/(const.c.cgs)**2) * (const.k_B.cgs*(T*u.K)/const.h.cgs)**4
 tolerancia=0.1#notar que el rango de tolerancia debe ser algo entre 0.1 y 0.01. para tolerancias mayores el error es demasiado
 planck_numerico=refinar_integral(planck_sinctes,0.0,pi/2.0,tolerancia)*constantes
+
 print('Integral funcion de planck= '+str(planck_numerico))
 print('valor analitico integral= '+str((pi**4/15)*constantes))
+
+error=np.fabs(planck_numerico-(pi**4/15)*constantes)
+print('error= '+str(error))
 print('-------------------------------------------------')
 
 ##para un R(radio efectivo del sol), se tiene que cumplir que la integral de la función de planck P, por el area de la esfera debe ser la luminosidad total
@@ -100,9 +104,14 @@ print('-------------------------------------------------')
 #Integracion mediante librerias de scipy
 lum_area=trapz(flux,w_length,axis=0)*10**3#factor 10^3 para convertir de W*m^-2 a erg*s^-1*cm^-2
 lum_sol=4.0*np.pi*(1.496*10.0**13.0)**2*lum_area
+error_2= np.fabs(lum_sol-luminosidad_total)
 print('luminosidad solar (scipy)= '+str(lum_sol))
+print('error= '+str(error_2))
 print('-------------------------------------------------')
 
+
 integral_planck=spi.quad(planck_sinctes,0.0,np.pi/2.0)[0]*constantes
+error_3=np.fabs(integral_planck-planck_numerico)
 print('integral funcion de planck(scipy)= '+str(integral_planck))
+print('error= '+str(error_3))
 #-----------------------------------------------------------------------
