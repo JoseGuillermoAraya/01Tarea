@@ -5,18 +5,12 @@ from astropy import constants as const
 import matplotlib.pyplot as plt
 #---------------------------------------------------------------------------------------------------------------------------------
 ##metodo para calcular la integral con la tolerancia deseada
-##dado un paso dx, tomamos un rectangulo cuya altura será f(a+dx/4), y de ancho dx/2 (desde a hasta a+dx/2)
+##
 def refinar_integral(f,a,b,tolerancia):#funcion,inicio,final,tolerancia
     #calculo integral inicial
-    #evitar singularidades
-    e=000.1
-    a=a+e
-    b=b-e
-
-    dif=1000000.0 #iniciar diferencia entre initegrales
+    dif=tolerancia+1 #iniciar diferencia entre initegrales
     dx=b-a#salto inicial
-    #fin=((b-a)/dx) +1
-    suma_1=f(a)+f(b)
+    suma_1=0#debería ser f(a)+f(b), pero en este caso la función a integrar tiende a 0 en a y en b.
     integral_1=dx/2*suma_1
     while dif>=tolerancia:
         dx=dx/2#reducir salto
@@ -25,33 +19,10 @@ def refinar_integral(f,a,b,tolerancia):#funcion,inicio,final,tolerancia
         #agregar solamente los términos faltantes (impares) (2i+1)
         for i in xrange(0,int((fin-1)/2)):
             suma+=2*(f(a+dx*(2*i+1)))
-        integral=integral_1
         integral=dx/2*suma
         dif=np.fabs(integral-integral_1)
         integral_1=integral
         suma_1=suma
-    '''
-    for i in xrange(0,int(fin)):#forzar que fin sea int
-        suma_1+=(f(a+i*dx+dx/4)+f(a+i*dx+3*dx/4))#para cada punto a, calculamos los dos rectangulos entre a y a+dx
-    integral_1=dx/2*suma_1
-    #iterar hasta que se alcance la tolerancia esperada
-    while dif>=tolerancia:
-        dx=dx/2#reducir salto
-        fin=(b-a)/dx+1#cantidad de iteraciones
-        suma=0
-
-        #agregar solamente los términos faltantes (impares)
-        for i in xrange(0,int(fin/2)):
-            suma+=(f(a+(2*i+1)*dx+dx/4)+f(a+(2*i+1)*dx+dx/4+dx/2))#para cada punto a, calculamos los dos rectangulos entre a y a+dx
-        integral=dx/2*suma
-
-        for i in xrange(0,int(fin)):#forzar que fin sea int
-            suma+=(f(a+i*dx+dx/4)+f(a+i*dx+3*dx/4))#para cada punto a, calculamos los dos rectangulos entre a y a+dx
-        integral=dx/2*suma
-        dif=np.fabs(integral-integral_1)
-        integral_1=integral
-        suma_1=suma
-        '''
     return integral
 #---------------------------------------------------------------------------------------------------------------------------------
 #importar datos
@@ -107,9 +78,9 @@ print('luminosidad total del Sol (erg*s^-1)= '+str(luminosidad_total))
 #-----------------------------------------------------------------------
 #Integral numerica de la funcion de planck
 T=5778#temperatura solar kelvins
-planck_sinctes=lambda x:tan(x)**3/(cos(x)**2*(exp(x)-1))
+planck_sinctes=lambda x:tan(x)**3/(cos(x)**2*(exp(tan(x))-1))
 constantes=2*pi*const.h.cgs/(const.c.cgs)**2 * (const.k_B.cgs*T/const.h.cgs)**4
-tolerancia=1000.0
+tolerancia=0.1#notar que el rango de tolerancia debe ser algo entre 0.1 y 0.01. para tolerancias mayores el error es demasiado
 planck_numerico=refinar_integral(planck_sinctes,0.0,pi/2.0,tolerancia)*constantes
 print('Integral funcion de planck= '+str(planck_numerico))
 
@@ -122,6 +93,6 @@ lum_sol=4.0*np.pi*(1.496*10.0**13.0)**2*lum_area
 print('luminosidad solar (scipy)= '+str(lum_sol))
 
 
-integral_planck=spi.quad(planck_sinctes,0,np.pi/2)[0]*constantes
+integral_planck=spi.quad(planck_sinctes,0.0,np.pi/2.0)[0]*constantes
 print('integral funcion de planck(scipy)= '+str(integral_planck))
 #-----------------------------------------------------------------------
