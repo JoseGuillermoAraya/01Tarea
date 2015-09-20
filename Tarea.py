@@ -4,6 +4,13 @@ import scipy.integrate as spi
 from astropy import constants as const
 import matplotlib.pyplot as plt
 import astropy.units as u
+#------------------------------------------------------
+##método de los trapecios para dos arreglos
+def calcular_trapecio(x,y,ini,fin):
+    suma=0
+    for i in xrange(ini,fin-1):
+        suma+=(y[i]+y[i+1])*(x[i+1]-x[i])/2
+    return suma
 
 #---------------------------------------------------------------------------------------------------------------------------------
 ##metodo para calcular la integral con la tolerancia deseada
@@ -67,11 +74,8 @@ show()
 #------------------------------------
 ini=0
 fin=len(flux)
-suma=0
-for i in xrange(ini,fin-1):
-    suma+=(flux[i]+flux[i+1])*(w_length[i+1]-w_length[i])/2
-
-luminosidad_area=suma*10**3 #transformar unidades a cgs
+l=calcular_trapecio(w_length,flux,ini,fin)
+luminosidad_area=l*10**3 #transformar unidades a cgs
 print('luminosidad por unidad de area del Sol (erg*s^-1*cm^-2)= '+str(luminosidad_area))
 ##calculo de la luminosidad total, multiplicando por la superficie de la esfera con radio 1UA(1.496*10^13 cm)
 luminosidad_total=4.0*np.pi*(1.496*10.0**13.0)**2*luminosidad_area
@@ -83,7 +87,7 @@ print('-------------------------------------------------')
 T=5778#temperatura solar kelvins
 planck_sinctes=lambda x:tan(x)**3/(cos(x)**2*(exp(tan(x))-1))
 constantes=(2*pi*const.h.cgs/(const.c.cgs)**2) * (const.k_B.cgs*(T*u.K)/const.h.cgs)**4
-tolerancia=0.1#notar que el rango de tolerancia debe ser algo entre 0.1 y 0.01. para tolerancias mayores el error es demasiado
+tolerancia=0.01#notar que el rango de tolerancia debe ser algo entre 0.1 y 0.01. para tolerancias mayores el error es demasiado
 planck_numerico=refinar_integral(planck_sinctes,0.0,pi/2.0,tolerancia)*constantes
 
 print('Integral funcion de planck= '+str(planck_numerico))
@@ -104,8 +108,8 @@ print('-------------------------------------------------')
 #Integracion mediante librerias de scipy
 lum_area=trapz(flux,w_length,axis=0)*10**3#factor 10^3 para convertir de W*m^-2 a erg*s^-1*cm^-2
 lum_sol=4.0*np.pi*(1.496*10.0**13.0)**2*lum_area
-error_2= np.fabs(lum_sol-luminosidad_total)
-print('luminosidad solar (scipy)= '+str(lum_sol))
+error_2= np.fabs(lum_area-luminosidad_area)
+print('luminosidad solar por unidad de area (scipy)= '+str(lum_area))
 print('error= '+str(error_2))
 print('-------------------------------------------------')
 
