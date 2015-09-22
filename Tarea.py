@@ -38,11 +38,11 @@ def refinar_integral(f,a,b,tolerancia):#funcion,inicio,final,tolerancia
 data=np.loadtxt("sun_AM0.dat")
 #transformar a unidades cgs (erg*s-1*cm-2*cm-1) para flujo y angstrom para longitud de onda
 #nm->angstrom. *10
-#(W*m-2*nm-1)->(erg*s-1*cm-2*cm-1). 10^7*(10^2)^-2*(10^2)^-1
+#(W*m-2*nm-1)->(erg*s-1*cm-2*Angstrom-1). 10^7*(10^2)^-2*(10)^-1
 w_length=data[:,0]
 w_length_angstrom=data[:,0]*10.0
 flux=data[:,1]
-flux_cgs=data[:,1]*10.0
+flux_cgs=data[:,1]*10.0**2
 
 #graficar en escala logaritmica
 plt.yscale('log')
@@ -50,7 +50,7 @@ plt.xscale('log')
 
 plt.plot(w_length_angstrom,flux_cgs,label='Espectro Solar')
 plt.xlabel('Longitud de onda (Angstrom)')
-plt.ylabel('Flujo ($erg*s^{-1} cm^{-3}$)')
+plt.ylabel('Espectro ($erg*s^{-1} cm^{-2}*angstrom^{-1}$)')
 plt.title('Espectro del Sol')
 plt.legend(loc='lower left')
 grid(True)
